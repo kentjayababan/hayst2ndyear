@@ -1,3 +1,11 @@
+
+import admin.admindashboard;
+import config.dbConnector;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import javax.swing.JOptionPane;
+import user.userDashboard;
+
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
@@ -16,6 +24,30 @@ public class movieapp extends javax.swing.JFrame {
     public movieapp() {
         initComponents();
     }
+    
+    static String status;
+    static String type;
+    
+    public static boolean loginAcc(String username, String password){
+        dbConnector connector = new dbConnector();
+        try{
+            String query = "SELECT * FROM tbl_user  WHERE u_username = '" + username + "' AND u_password = '" + password + "'";
+            ResultSet resultSet = connector.getData(query);
+            if(resultSet.next()){
+                status = resultSet.getString("u_status");
+                type = resultSet.getString("u_usertype");
+                return true;
+            }else{
+                return false;
+            
+            
+            }
+        }catch (SQLException ex) {
+            
+            return false;
+        }
+
+    }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -30,15 +62,15 @@ public class movieapp extends javax.swing.JFrame {
         jPanel1 = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
         jTextField1 = new javax.swing.JTextField();
-        uname = new javax.swing.JButton();
         jButton4 = new javax.swing.JButton();
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
-        jPasswordField1 = new javax.swing.JPasswordField();
+        pass = new javax.swing.JPasswordField();
         jLabel4 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
         jLabel6 = new javax.swing.JLabel();
         jLabel7 = new javax.swing.JLabel();
+        user = new javax.swing.JTextField();
 
         jLabel1.setForeground(new java.awt.Color(255, 102, 51));
         jLabel1.setText("jLabel1");
@@ -51,7 +83,7 @@ public class movieapp extends javax.swing.JFrame {
         jPanel2.setBackground(new java.awt.Color(204, 0, 0));
         jPanel2.setForeground(new java.awt.Color(153, 0, 0));
 
-        jTextField1.setBackground(new java.awt.Color(204, 0, 51));
+        jTextField1.setBackground(new java.awt.Color(255, 0, 0));
         jTextField1.setFont(new java.awt.Font("Arial", 1, 24)); // NOI18N
         jTextField1.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         jTextField1.setText("MOVIE APPLICATION SYSTEM");
@@ -74,13 +106,6 @@ public class movieapp extends javax.swing.JFrame {
 
         jPanel1.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, -1, -1));
 
-        uname.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                unameActionPerformed(evt);
-            }
-        });
-        jPanel1.add(uname, new org.netbeans.lib.awtextra.AbsoluteConstraints(440, 220, 276, 50));
-
         jButton4.setFont(new java.awt.Font("Arial", 1, 14)); // NOI18N
         jButton4.setText("LOGIN");
         jButton4.addActionListener(new java.awt.event.ActionListener() {
@@ -99,11 +124,16 @@ public class movieapp extends javax.swing.JFrame {
         jLabel3.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/kentj.png"))); // NOI18N
         jPanel1.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 100, 360, 370));
-        jPanel1.add(jPasswordField1, new org.netbeans.lib.awtextra.AbsoluteConstraints(440, 300, 280, 50));
+        jPanel1.add(pass, new org.netbeans.lib.awtextra.AbsoluteConstraints(440, 300, 280, 50));
 
         jLabel4.setFont(new java.awt.Font("Arial", 1, 18)); // NOI18N
         jLabel4.setForeground(new java.awt.Color(255, 255, 255));
         jLabel4.setText("Create A new Account");
+        jLabel4.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jLabel4MouseClicked(evt);
+            }
+        });
         jPanel1.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(470, 420, 200, 30));
 
         jLabel5.setFont(new java.awt.Font("Arial", 1, 14)); // NOI18N
@@ -119,6 +149,7 @@ public class movieapp extends javax.swing.JFrame {
 
         jLabel7.setText("Password:");
         jPanel1.add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(350, 320, -1, -1));
+        jPanel1.add(user, new org.netbeans.lib.awtextra.AbsoluteConstraints(440, 220, 280, 50));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -134,19 +165,48 @@ public class movieapp extends javax.swing.JFrame {
         );
 
         pack();
+        setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
     private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField1ActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_jTextField1ActionPerformed
 
-    private void unameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_unameActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_unameActionPerformed
-
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
-        // TODO add your handling code here:
+       
+       if(loginAcc(user.getText(),pass.getText())){
+             
+            if(!status.equals("Active")){
+              JOptionPane.showMessageDialog(null,"In-Active Account, contact the Admin!");
+            }else{
+             
+            if(type.equals("ADMIN")){
+                JOptionPane.showMessageDialog(null,"Login Successful!");
+               admindashboard ads = new admindashboard();
+               ads.setVisible(true);
+               this.dispose();
+            }else if(type.equals("USER")){
+                JOptionPane.showMessageDialog(null,"Login Successful!");
+                userDashboard uds = new userDashboard();
+                uds.setVisible(true);
+                this.dispose();
+            }else{
+              JOptionPane.showMessageDialog(null,"No account type found, contact the Admin!");
+            }
+            
+            
+            } 
+        }else{
+            JOptionPane.showMessageDialog(null,"Login Failed");
+            
+        }
     }//GEN-LAST:event_jButton4ActionPerformed
+
+    private void jLabel4MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel4MouseClicked
+        registration fboy = new registration();
+        fboy.setVisible(true);
+        this.dispose();
+    }//GEN-LAST:event_jLabel4MouseClicked
 
     /**
      * @param args the command line arguments
@@ -194,8 +254,9 @@ public class movieapp extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel7;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
-    private javax.swing.JPasswordField jPasswordField1;
     private javax.swing.JTextField jTextField1;
-    private javax.swing.JButton uname;
+    private javax.swing.JPasswordField pass;
+    private javax.swing.JTextField user;
     // End of variables declaration//GEN-END:variables
+
 }
